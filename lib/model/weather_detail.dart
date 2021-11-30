@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class WeatherDetail {
   Coord? coordinates;
   List<Weather>? weather;
@@ -6,7 +8,7 @@ class WeatherDetail {
   int? visibility;
   Wind? wind;
   Clouds? clouds;
-  int? timeOfCalculation;
+  String? timeOfCalculation;
   Sys? sys;
   int? timezone;
   int? id;
@@ -42,7 +44,9 @@ class WeatherDetail {
     visibility = json['visibility'];
     wind = json['wind'] != null ? Wind.fromJson(json['wind']) : null;
     clouds = json['clouds'] != null ? Clouds.fromJson(json['clouds']) : null;
-    timeOfCalculation = json['dt'];
+    var dt = DateTime.fromMillisecondsSinceEpoch(json['dt'] * 1000);
+    timeOfCalculation =
+        DateFormat('dd/MM/yyyy, hh:mm a').format(dt); // 12/31/2000, 10:00 PM
     sys = json['sys'] != null ? Sys.fromJson(json['sys']) : null;
     timezone = json['timezone'];
     id = json['id'];
@@ -210,15 +214,19 @@ class Clouds {
 
 class Sys {
   String? country;
-  int? sunrise;
-  int? sunset;
+  String? sunrise;
+  String? sunset;
 
   Sys({this.country, this.sunrise, this.sunset});
 
   Sys.fromJson(Map<String, dynamic> json) {
     country = json['country'];
-    sunrise = json['sunrise'];
-    sunset = json['sunset'];
+    var dtRise = DateTime.fromMillisecondsSinceEpoch(json['sunrise'] * 1000);
+    sunrise = DateFormat('dd/MM/yyyy, hh:mm a')
+        .format(dtRise); // 12/31/2000, 10:00 PM
+    var dtSet = DateTime.fromMillisecondsSinceEpoch(json['sunset'] * 1000);
+    sunrise =
+        DateFormat('dd/MM/yyyy, hh:mm a').format(dtSet); // 12/31/2000, 10:00 PM
   }
 
   Map<String, dynamic> toJson() {

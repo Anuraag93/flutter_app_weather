@@ -14,18 +14,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<String> cities = ["2147714", "4163971", "2174003"];
-  List<WeatherDetail> cityWeathers = [];
+  Set<String> _cities = {"2147714", "4163971", "2174003"};
+  List<WeatherDetail> _cityWeathers = [];
   @override
   void initState() {
     super.initState();
+    print("InitState of homescreen ********");
     // Weather data for melbourne => 4163971
     //Sydney => 2147714,
     //Brisbane => 2174003
     // Provider.of<WeatherViewModel>(context, listen: false)
     //     .fetchWeatherData("2174003");
     Provider.of<WeatherViewModel>(context, listen: false)
-        .fetchWeatherList(cities);
+        .fetchWeatherList(_cities.toList());
+    Provider.of<WeatherViewModel>(context, listen: false).fetchCityList();
   }
 
   @override
@@ -36,6 +38,25 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(),
+      floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: () async {
+            var id = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => CitySearchScreen(
+                      cityList:
+                          Provider.of<WeatherViewModel>(context).cityList ??
+                              [])),
+            );
+            print("city Id add: ");
+            if (id != null) {
+              //add to the city list
+              _cities.add(id.toString());
+              Provider.of<WeatherViewModel>(context, listen: false)
+                  .fetchWeatherList(_cities.toList());
+            }
+          }),
       body: _getWeatherWidget(context, apiResponse),
     );
   }

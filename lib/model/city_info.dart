@@ -8,7 +8,7 @@ class CityInfo {
   CityInfo({this.id, this.name, this.state, this.country, this.coord});
 
   CityInfo.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    id = json['id'].toInt();
     name = json['name'];
     state = json['state'];
     country = json['country'];

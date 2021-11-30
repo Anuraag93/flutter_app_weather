@@ -13,6 +13,7 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
   @override
   Widget build(BuildContext context) {
     WeatherDetail _info = widget.info;
+
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
@@ -37,6 +38,7 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
             Text(_info.wind!.speed.toString()),
             Text(_info.wind!.deg.toString()),
             Text(_info.wind!.gust.toString()),
+            Text(_info.visibility.toString()),
             Text("Cloud"),
             Text(_info.clouds!.percentage.toString() + " %"),
             Text("sys"),
