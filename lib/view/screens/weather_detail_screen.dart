@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app_weather/model/apis/api_response.dart';
 import 'package:flutter_app_weather/model/weather_detail.dart';
+import 'package:flutter_app_weather/view/widgets/grid_item_widget.dart';
+import 'package:flutter_app_weather/view/widgets/progress_loader.dart';
 import 'package:flutter_app_weather/view_model/weather_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -14,6 +16,7 @@ class WeatherDetailScreen extends StatefulWidget {
 
 class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
   late WeatherDetail _info;
+  final _degreeSymbol = "°";
   @override
   void initState() {
     _info = widget.info;
@@ -24,22 +27,23 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
   Widget build(BuildContext context) {
     ApiResponse apiResponse = Provider.of<WeatherViewModel>(context).response;
 
-    return Scaffold(appBar: AppBar(), body: _scaffoldBody(apiResponse));
+    return SafeArea(
+        child: Scaffold(
+            body: Stack(
+      children: [
+        _scaffoldBody(apiResponse),
+        IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: Icon(Icons.arrow_back)),
+      ],
+    )));
   }
 
   Widget _scaffoldBody(ApiResponse apiResponse) {
     var cityWeatherList = apiResponse.data as List<WeatherDetail>?;
     switch (apiResponse.status) {
       case Status.LOADING:
-        return Center(
-            child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(),
-            Text(apiResponse.message.toString()),
-          ],
-        ));
+        return ProgressLoader(message: apiResponse.message.toString());
       case Status.COMPLETED:
         var temp =
             cityWeatherList?.where((v) => v.id == widget.info.id).toList();
@@ -61,38 +65,86 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
   }
 
   Widget _detailWidget() {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text("Name"),
-          Text(_info.cityName!),
-          Text("Weather Summary"),
-          Text(_info.weather![0].main!),
-          Text(_info.weather![0].description!),
-          Text("Main"),
-          Text(_info.mainInfo!.temp.toString()),
-          Text(_info.mainInfo!.feelsLike.toString()),
-          Text(_info.mainInfo!.tempMin.toString()),
-          Text(_info.mainInfo!.tempMin.toString()),
-          Text(_info.mainInfo!.pressure.toString()),
-          Text(_info.mainInfo!.humidity.toString()),
-          Text(_info.mainInfo!.grndLevel.toString()),
-          Text(_info.mainInfo!.seaLevel.toString()),
-          Text("Wind"),
-          Text(_info.wind!.speed.toString()),
-          Text(_info.wind!.deg.toString()),
-          Text(_info.wind!.gust.toString()),
-          Text(_info.visibility.toString()),
-          Text("Cloud"),
-          Text(_info.clouds!.percentage.toString() + " %"),
-          Text("sys"),
-          Text(_info.sys!.country.toString()),
-          Text(_info.sys!.sunrise.toString()),
-          Text(_info.sys!.sunset.toString()),
-          Text("time"),
-          Text(_info.timeOfCalculation.toString()),
-          Text(_info.timezone.toString()),
+    return Container(
+      color: Colors.black12,
+      // decoration: BoxDecoration(gradient: ),
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      child: CustomScrollView(
+        slivers: [
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                SizedBox(height: 80),
+                // Text("Name"),
+                Center(
+                  child: Image.network(_info.weather?.icon ?? ""),
+                ),
+                Center(
+                  child: Text(
+                    _info.cityName!,
+                    style: TextStyle(fontSize: 30),
+                  ),
+                ),
+                Center(
+                    child: Text(
+                  (_info.mainInfo?.temp!.round().toString() ?? "") +
+                      _degreeSymbol,
+                  style: TextStyle(fontSize: 80),
+                )),
+                Center(
+                    child: Text(
+                  _info.weather!.main!,
+                  style: TextStyle(fontSize: 20),
+                )),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "L: ${_info.mainInfo!.tempMin?.round().toString()}$_degreeSymbol",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    SizedBox(width: 5),
+                    Text(
+                      "H: ${_info.mainInfo!.tempMax?.round().toString()}$_degreeSymbol",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ],
+                ),
+                ListTile(
+                  title: Text("Summary"),
+                  subtitle: Text(
+                      "Weather condition is ${_info.weather!.description!}"),
+                ),
+              ],
+            ),
+          ),
+          SliverGrid.extent(
+            maxCrossAxisExtent: 200,
+            crossAxisSpacing: 20,
+            mainAxisSpacing: 20,
+            children: [
+              GridItemWidget(
+                  title: "FEELS LIKE",
+                  value:
+                      " ${_info.mainInfo!.feelsLike?.round().toString()}$_degreeSymbol"),
+              GridItemWidget(
+                  title: "HUMIDITY",
+                  value: " ${_info.mainInfo!.humidity?.round().toString()}%"),
+              GridItemWidget(
+                  title: "Atmospheric Pressure",
+                  value: " ${_info.mainInfo!.pressure?.round().toString()}hPa"),
+              GridItemWidget(
+                  title: "WIND",
+                  value:
+                      " Speed: ${_info.wind!.speed?.round().toString()}m/s \n Direction: ${_info.wind!.speed?.round().toString()}$_degreeSymbol"),
+              GridItemWidget(
+                  title: "CLOUDINESS",
+                  value: " ${_info.clouds!.percentage?.round().toString()}%"),
+              GridItemWidget(
+                  title: "DATE & TIME",
+                  value: " ${_info.timeOfCalculation.toString()}"),
+            ],
+          )
         ],
       ),
     );

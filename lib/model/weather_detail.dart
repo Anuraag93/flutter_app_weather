@@ -2,7 +2,7 @@ import 'package:intl/intl.dart';
 
 class WeatherDetail {
   Coord? coordinates;
-  List<Weather>? weather;
+  Weather? weather;
   String? base;
   Main? mainInfo;
   int? visibility;
@@ -34,9 +34,9 @@ class WeatherDetail {
     // print("json: $json");
     coordinates = json['coord'] != null ? Coord.fromJson(json['coord']) : null;
     if (json['weather'] != null) {
-      weather = <Weather>[];
+      // weather = <Weather>[];
       json['weather'].forEach((v) {
-        weather?.add(Weather.fromJson(v));
+        weather = Weather.fromJson(v);
       });
     }
     base = json['base'];
@@ -60,7 +60,7 @@ class WeatherDetail {
       data['coord'] = coordinates?.toJson();
     }
     if (weather != null) {
-      data['weather'] = weather?.map((v) => v.toJson()).toList();
+      data['weather'] = weather?.toJson();
     }
     data['base'] = base;
     if (mainInfo != null) {
@@ -117,6 +117,10 @@ class Weather {
     main = json['main'];
     description = json['description'];
     icon = json['icon'];
+    if (icon != null) {
+      // get the icon url if the icon is not null
+      icon = "https://openweathermap.org/img/wn/$icon@2x.png";
+    }
   }
 
   Map<String, dynamic> toJson() {

@@ -11,11 +11,17 @@ class WeatherWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(item.cityName ?? "City Name"),
-      trailing:
-          Text((item.mainInfo?.temp?.toString() ?? "0") + " $_degreeSymbol"),
-      onTap: onTap,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ListTile(
+        tileColor: Colors.amber[300],
+        contentPadding: EdgeInsets.all(8),
+        leading: Image.network(item.weather?.icon ?? ""),
+        title: Text(item.cityName ?? "City Name"),
+        trailing:
+            Text((item.mainInfo?.temp?.toString() ?? "0") + " $_degreeSymbol"),
+        onTap: onTap,
+      ),
     );
   }
 }

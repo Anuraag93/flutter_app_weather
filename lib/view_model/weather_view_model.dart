@@ -36,9 +36,10 @@ class WeatherViewModel with ChangeNotifier {
 
   /// Call the weather service and gets the requested weather data of
   /// a list of cities.
-  Future<void> fetchWeatherList(List<String> cities) async {
-    _apiResponse = ApiResponse.loading('Fetching Weather List');
-    // notifyListeners();
+  Future<void> fetchWeatherList(List<String> cities,
+      {bool fromInit = false}) async {
+    _apiResponse = ApiResponse.loading('Fetching Weather Updates');
+    if (!fromInit) notifyListeners();
     try {
       List<WeatherDetail> weatherList = [];
       for (var value in cities) {

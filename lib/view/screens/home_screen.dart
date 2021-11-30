@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app_weather/model/apis/api_response.dart';
 import 'package:flutter_app_weather/model/weather_detail.dart';
 import 'package:flutter_app_weather/view/view.dart';
+import 'package:flutter_app_weather/view/widgets/progress_loader.dart';
 import 'package:flutter_app_weather/view/widgets/weather_widget.dart';
 import 'package:flutter_app_weather/view_model/weather_view_model.dart';
 import 'package:provider/provider.dart';
@@ -23,15 +24,13 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     print("InitState of homescreen ********");
-    // Weather data for melbourne => 4163971
-    //Sydney => 2147714,
-    //Brisbane => 2174003
-    // Provider.of<WeatherViewModel>(context, listen: false)
-    //     .fetchWeatherData("2174003");
+
     Provider.of<WeatherViewModel>(context, listen: false)
-        .fetchWeatherList(_cities.toList());
+        .fetchWeatherList(_cities.toList(), fromInit: true);
+
     Provider.of<WeatherViewModel>(context, listen: false).fetchCityList();
-    _timer = Timer.periodic(Duration(seconds: 30), (Timer t) {
+
+    _timer = Timer.periodic(Duration(seconds: 60), (Timer t) {
       print("Periodic Update ${t.tick}");
       Provider.of<WeatherViewModel>(context, listen: false)
           .fetchWeatherList(_cities.toList());
@@ -57,8 +56,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           Provider.of<WeatherViewModel>(context).cityList ??
                               [])),
             );
-            print("city Id add: ");
             if (id != null) {
+              print("city Id add: $id");
               //add to the city list
               _cities.add(id.toString());
               Provider.of<WeatherViewModel>(context, listen: false)
@@ -73,16 +72,9 @@ class _HomeScreenState extends State<HomeScreen> {
     var cityWeatherList = apiResponse.data as List<WeatherDetail>?;
     switch (apiResponse.status) {
       case Status.LOADING:
-        return Center(
-            child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(),
-            Text(apiResponse.message.toString()),
-          ],
-        ));
+        return ProgressLoader(message: apiResponse.message.toString());
       case Status.COMPLETED:
+        final size = MediaQuery.of(context).size;
         return ListView.builder(
             itemCount: cityWeatherList?.length ?? 0,
             itemBuilder: (context, index) => WeatherWidget(
