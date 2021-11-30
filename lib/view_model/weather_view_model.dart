@@ -1,21 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app_weather/model/apis/api_response.dart';
 import 'package:flutter_app_weather/model/city_info.dart';
-import 'package:flutter_app_weather/model/repositories/cities_repository.dart';
+
 import 'package:flutter_app_weather/model/weather_detail.dart';
 import 'package:flutter_app_weather/model/repositories/weather_repository.dart';
 
 class WeatherViewModel with ChangeNotifier {
   ApiResponse _apiResponse = ApiResponse.initial('Empty List');
 
-  List<CityInfo>? _cityList;
-
   ApiResponse get response {
     return _apiResponse;
-  }
-
-  List<CityInfo>? get cityList {
-    return _cityList;
   }
 
   /// Call the weather service and gets the requested weather data of
@@ -55,17 +49,5 @@ class WeatherViewModel with ChangeNotifier {
       print(e);
     }
     notifyListeners();
-  }
-
-  /// Read cities info once from a json file.
-  Future<void> fetchCityList() async {
-    const String jsonLocation = "assets/city_list.json";
-    try {
-      _cityList =
-          await CitiesRepository().FetchContentFromJsonFile(jsonLocation);
-    } catch (e) {
-      _cityList = [];
-      print(e);
-    }
   }
 }

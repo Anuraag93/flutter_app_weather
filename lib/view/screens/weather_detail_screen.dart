@@ -77,7 +77,14 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
                 SizedBox(height: 80),
                 // Text("Name"),
                 Center(
-                  child: Image.network(_info.weather?.icon ?? ""),
+                  child: Hero(
+                      tag: "weather${_info.id}",
+                      child: Image.network(
+                        _info.weather?.icon ?? "",
+                        // width: 150,
+                        // height: 150,
+                        // color: Colors.yellow,
+                      )),
                 ),
                 Center(
                   child: Text(

@@ -6,6 +6,7 @@ import 'package:flutter_app_weather/model/weather_detail.dart';
 import 'package:flutter_app_weather/view/view.dart';
 import 'package:flutter_app_weather/view/widgets/progress_loader.dart';
 import 'package:flutter_app_weather/view/widgets/weather_widget.dart';
+import 'package:flutter_app_weather/view_model/search_cities_view_model.dart';
 import 'package:flutter_app_weather/view_model/weather_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -28,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Provider.of<WeatherViewModel>(context, listen: false)
         .fetchWeatherList(_cities.toList(), fromInit: true);
 
-    Provider.of<WeatherViewModel>(context, listen: false).fetchCityList();
+    Provider.of<SearchCitiesViewModel>(context, listen: false).fetchCityList();
 
     _timer = Timer.periodic(Duration(seconds: 60), (Timer t) {
       print("Periodic Update ${t.tick}");
@@ -50,19 +51,9 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: () async {
             var id = await Navigator.push(
               context,
-              MaterialPageRoute(
-                  builder: (context) => CitySearchScreen(
-                      cityList:
-                          Provider.of<WeatherViewModel>(context).cityList ??
-                              [])),
+              MaterialPageRoute(builder: (context) => CitySearchScreen()),
             );
-            if (id != null) {
-              print("city Id add: $id");
-              //add to the city list
-              _cities.add(id.toString());
-              Provider.of<WeatherViewModel>(context, listen: false)
-                  .fetchWeatherList(_cities.toList());
-            }
+            _addCityListener(id);
           }),
       body: _getWeatherWidget(context, apiResponse),
     );
@@ -104,5 +95,13 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _timer.cancel();
     super.dispose();
+  }
+
+  void _addCityListener(var id) {
+    if (id != null) {
+      _cities.add(id.toString());
+      Provider.of<WeatherViewModel>(context, listen: false)
+          .fetchWeatherList(_cities.toList());
+    }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app_weather/view/view.dart';
+import 'package:flutter_app_weather/view_model/search_cities_view_model.dart';
 import 'package:flutter_app_weather/view_model/weather_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -14,7 +15,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider.value(value: WeatherViewModel())],
+      providers: [
+        ChangeNotifierProvider.value(value: WeatherViewModel()),
+        ChangeNotifierProvider.value(value: SearchCitiesViewModel()),
+      ],
       child: MaterialApp(
         title: 'Weather Demo',
         theme: ThemeData(

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app_weather/model/city_info.dart';
+import 'package:flutter_app_weather/view_model/search_cities_view_model.dart';
+import 'package:provider/provider.dart';
 
 class CitySearchScreen extends StatefulWidget {
-  final List<CityInfo> cityList;
-  const CitySearchScreen({Key? key, required this.cityList}) : super(key: key);
+  const CitySearchScreen({Key? key}) : super(key: key);
 
   @override
   _CitySearchScreenState createState() => _CitySearchScreenState();
@@ -15,15 +16,9 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
   int _animMiliSeconds = 300;
 
   @override
-  void initState() {
-    _cityList = widget.cityList;
-    _cityList.sort((a, b) => a.name!.compareTo(b.name!));
-
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    _cityList = Provider.of<SearchCitiesViewModel>(context).cityList!;
+
     return SafeArea(
       child: Scaffold(
         body: Column(
@@ -58,7 +53,10 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
                           _searchSelected = true;
                         });
                       },
-                      onChanged: (value) => _runFilter(value),
+                      onChanged: (value) => Provider.of<SearchCitiesViewModel>(
+                              context,
+                              listen: false)
+                          .runFilter(value),
                       decoration: InputDecoration(
                           contentPadding: EdgeInsets.zero,
                           border: OutlineInputBorder(
@@ -106,7 +104,12 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
                       key: ValueKey(_cityList[index].id),
                       title: Text(cityName),
                       onTap: () {
-                        Navigator.pop(context, _cityList[index].id);
+                        var id = _cityList[index].id;
+                        Provider.of<SearchCitiesViewModel>(context,
+                                listen: false)
+                            .addSearchedCity(
+                                _cityList[index].id?.toString() ?? "");
+                        Navigator.pop(context, id);
                       },
                     );
                   }),
@@ -117,19 +120,10 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
     );
   }
 
-  void _runFilter(String keyword) {
-    List<CityInfo> results = [];
-    if (keyword.isEmpty) {
-      // if the search field is empty or with white spaces, we will display complete city list.
-      results = widget.cityList;
-    } else {
-      results = widget.cityList
-          .where((city) =>
-              city.name!.toLowerCase().contains(keyword.toLowerCase()))
-          .toList();
-    }
-    setState(() {
-      _cityList = results;
-    });
-  }
+  // void _runFilter(String keyword) {
+
+  //   setState(() {
+  //     _cityList = results;
+  //   });
+  // }
 }

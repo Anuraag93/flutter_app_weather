@@ -16,7 +16,12 @@ class WeatherWidget extends StatelessWidget {
       child: ListTile(
         tileColor: Colors.amber[300],
         contentPadding: EdgeInsets.all(8),
-        leading: Image.network(item.weather?.icon ?? ""),
+        leading: Hero(
+            tag: "weather${item.id}",
+            child: Image.network(
+              item.weather?.icon ?? "",
+              // color: Colors.yellow,
+            )),
         title: Text(item.cityName ?? "City Name"),
         trailing:
             Text((item.mainInfo?.temp?.toString() ?? "0") + " $_degreeSymbol"),
