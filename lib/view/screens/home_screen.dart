@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app_weather/model/apis/api_response.dart';
 import 'package:flutter_app_weather/model/weather_detail.dart';
@@ -16,6 +18,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   Set<String> _cities = {"2147714", "4163971", "2174003"};
   List<WeatherDetail> _cityWeathers = [];
+  late Timer _timer;
   @override
   void initState() {
     super.initState();
@@ -28,6 +31,11 @@ class _HomeScreenState extends State<HomeScreen> {
     Provider.of<WeatherViewModel>(context, listen: false)
         .fetchWeatherList(_cities.toList());
     Provider.of<WeatherViewModel>(context, listen: false).fetchCityList();
+    _timer = Timer.periodic(Duration(seconds: 30), (Timer t) {
+      print("Periodic Update ${t.tick}");
+      Provider.of<WeatherViewModel>(context, listen: false)
+          .fetchWeatherList(_cities.toList());
+    });
   }
 
   @override
@@ -98,5 +106,11 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Text("The list is empty. Please add more cities."),
         );
     }
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
   }
 }

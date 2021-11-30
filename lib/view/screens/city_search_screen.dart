@@ -31,7 +31,7 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
             AnimatedContainer(
               padding: EdgeInsets.only(top: 20),
               width: MediaQuery.of(context).size.width,
-              height: _searchSelected ? 0 : 60,
+              height: _searchSelected ? 0 : 80,
               duration: Duration(milliseconds: _animMiliSeconds),
               curve: Curves.fastOutSlowIn,
               child: Row(

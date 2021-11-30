@@ -44,7 +44,9 @@ class WeatherViewModel with ChangeNotifier {
       for (var value in cities) {
         WeatherDetail w =
             await WeatherRepository().fetchWeatherViaCityId(value);
+
         weatherList.add(w);
+        print("Fetched city " + w.cityName.toString());
       }
       _apiResponse = ApiResponse.completed(weatherList);
     } catch (e) {
