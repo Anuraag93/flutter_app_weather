@@ -31,7 +31,21 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
         child: Scaffold(
             body: Stack(
       children: [
-        _scaffoldBody(apiResponse),
+        Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              fit: BoxFit.cover,
+              image: AssetImage(
+                _getAssetImage(_info.weather!.main),
+              ),
+            ),
+          ),
+        ),
+        Container(
+          color: Colors.white30,
+          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          child: _scaffoldBody(apiResponse),
+        ),
         IconButton(
             onPressed: () => Navigator.pop(context),
             icon: Icon(Icons.arrow_back)),
@@ -65,95 +79,106 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
   }
 
   Widget _detailWidget() {
-    return Container(
-      color: Colors.black12,
-      // decoration: BoxDecoration(gradient: ),
-      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-      child: CustomScrollView(
-        slivers: [
-          SliverList(
-            delegate: SliverChildListDelegate(
-              [
-                SizedBox(height: 80),
-                // Text("Name"),
-                Center(
-                  child: Hero(
-                      tag: "weather${_info.id}",
-                      child: Image.network(
-                        _info.weather?.icon ?? "",
-                        // width: 150,
-                        // height: 150,
-                        // color: Colors.yellow,
-                      )),
+    return CustomScrollView(
+      slivers: [
+        SliverList(
+          delegate: SliverChildListDelegate(
+            [
+              SizedBox(height: 80),
+              // Text("Name"),
+              Center(
+                child: Hero(
+                    tag: "weather${_info.id}",
+                    child: Image.network(
+                      _info.weather?.icon ?? "",
+                      // width: 150,
+                      // height: 150,
+                      // color: Colors.yellow,
+                    )),
+              ),
+              Center(
+                child: Text(
+                  _info.cityName!,
+                  style: TextStyle(fontSize: 30),
                 ),
-                Center(
+              ),
+              Center(
                   child: Text(
-                    _info.cityName!,
-                    style: TextStyle(fontSize: 30),
+                (_info.mainInfo?.temp!.round().toString() ?? "") +
+                    _degreeSymbol,
+                style: TextStyle(fontSize: 80),
+              )),
+              Center(
+                  child: Text(
+                _info.weather!.main!,
+                style: TextStyle(fontSize: 20),
+              )),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "L: ${_info.mainInfo!.tempMin?.round().toString()}$_degreeSymbol",
+                    style: TextStyle(fontSize: 20),
                   ),
-                ),
-                Center(
-                    child: Text(
-                  (_info.mainInfo?.temp!.round().toString() ?? "") +
-                      _degreeSymbol,
-                  style: TextStyle(fontSize: 80),
-                )),
-                Center(
-                    child: Text(
-                  _info.weather!.main!,
-                  style: TextStyle(fontSize: 20),
-                )),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "L: ${_info.mainInfo!.tempMin?.round().toString()}$_degreeSymbol",
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    SizedBox(width: 5),
-                    Text(
-                      "H: ${_info.mainInfo!.tempMax?.round().toString()}$_degreeSymbol",
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  ],
-                ),
-                ListTile(
-                  title: Text("Summary"),
-                  subtitle: Text(
-                      "Weather condition is ${_info.weather!.description!}"),
-                ),
-              ],
-            ),
-          ),
-          SliverGrid.extent(
-            maxCrossAxisExtent: 200,
-            crossAxisSpacing: 20,
-            mainAxisSpacing: 20,
-            children: [
-              GridItemWidget(
-                  title: "FEELS LIKE",
-                  value:
-                      " ${_info.mainInfo!.feelsLike?.round().toString()}$_degreeSymbol"),
-              GridItemWidget(
-                  title: "HUMIDITY",
-                  value: " ${_info.mainInfo!.humidity?.round().toString()}%"),
-              GridItemWidget(
-                  title: "Atmospheric Pressure",
-                  value: " ${_info.mainInfo!.pressure?.round().toString()}hPa"),
-              GridItemWidget(
-                  title: "WIND",
-                  value:
-                      " Speed: ${_info.wind!.speed?.round().toString()}m/s \n Direction: ${_info.wind!.speed?.round().toString()}$_degreeSymbol"),
-              GridItemWidget(
-                  title: "CLOUDINESS",
-                  value: " ${_info.clouds!.percentage?.round().toString()}%"),
-              GridItemWidget(
-                  title: "DATE & TIME",
-                  value: " ${_info.timeOfCalculation.toString()}"),
+                  SizedBox(width: 5),
+                  Text(
+                    "H: ${_info.mainInfo!.tempMax?.round().toString()}$_degreeSymbol",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ],
+              ),
+              ListTile(
+                title: Text("Summary"),
+                subtitle:
+                    Text("Weather condition is ${_info.weather!.description!}"),
+              ),
             ],
-          )
-        ],
-      ),
+          ),
+        ),
+        SliverGrid.extent(
+          maxCrossAxisExtent: 200,
+          crossAxisSpacing: 20,
+          mainAxisSpacing: 20,
+          children: [
+            GridItemWidget(
+                title: "FEELS LIKE",
+                value:
+                    " ${_info.mainInfo!.feelsLike?.round().toString()}$_degreeSymbol"),
+            GridItemWidget(
+                title: "HUMIDITY",
+                value: " ${_info.mainInfo!.humidity?.round().toString()}%"),
+            GridItemWidget(
+                title: "Atmospheric Pressure",
+                value: " ${_info.mainInfo!.pressure?.round().toString()}hPa"),
+            GridItemWidget(
+                title: "WIND",
+                value:
+                    " Speed: ${_info.wind!.speed?.round().toString()}m/s \n Direction: ${_info.wind!.speed?.round().toString()}$_degreeSymbol"),
+            GridItemWidget(
+                title: "CLOUDINESS",
+                value: " ${_info.clouds!.percentage?.round().toString()}%"),
+            GridItemWidget(
+                title: "DATE & TIME",
+                value: " ${_info.timeOfCalculation.toString()}"),
+          ],
+        )
+      ],
     );
+  }
+
+  String _getAssetImage(String? type) {
+    switch (type) {
+      case "Clouds":
+        return "assets/images/cloud.jpg";
+      case "Rain":
+        return "assets/images/rain.jpg";
+      case "Snow":
+        return "assets/images/snow.jpg";
+      case "Clear":
+        return "assets/images/clear.jpg";
+
+      default:
+        return "assets/images/default.jpg";
+    }
   }
 }

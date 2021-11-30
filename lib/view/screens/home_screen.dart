@@ -45,7 +45,9 @@ class _HomeScreenState extends State<HomeScreen> {
     print("message: " + apiResponse.message.toString());
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text("Weather Demo App"),
+      ),
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
           onPressed: () async {
